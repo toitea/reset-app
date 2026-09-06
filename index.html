@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#121419">
+<link rel="manifest" href="manifest.json">
+<title>RESET</title>
+<style>
+:root{--bg:#0f1115;--panel:#191d24;--panel2:#222833;--text:#f5f6f7;--muted:#a8b0bb;--accent:#a8cfac;--gold:#e7c77d;--line:#303742;--red:#f3a1a1}
+*{box-sizing:border-box} body{margin:0;background:linear-gradient(#0c0e12,#151923);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh}
+.app{max-width:700px;margin:auto;padding:18px 16px 90px}.top{display:flex;justify-content:space-between;align-items:center}.brand{font-weight:900;letter-spacing:.18em;font-size:22px}
+.profile{background:var(--panel);border:1px solid var(--line);color:#fff;padding:9px 13px;border-radius:999px;font-weight:700}
+.hero{margin-top:16px;background:linear-gradient(145deg,#202731,#161a20);border:1px solid var(--line);border-radius:24px;padding:20px}
+.hero h1{margin:0 0 8px;font-size:28px}.hero p{margin:0;color:var(--muted);line-height:1.45}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.tile{min-height:112px;text-align:left;background:var(--panel);border:1px solid var(--line);color:white;border-radius:20px;padding:17px;font-weight:800;font-size:16px}
+.tile small{display:block;color:var(--muted);font-weight:500;margin-top:6px;line-height:1.3}.tile:active{transform:scale(.985)}
+.moods{display:none;gap:8px;flex-wrap:wrap;margin-top:14px}.moods.show{display:flex}.moods button,.actions button{border:0;border-radius:14px;padding:11px 13px;background:#29313c;color:white;font-weight:750}
+.result{display:none;background:var(--panel2);border:1px solid var(--line);border-radius:24px;padding:20px;margin-top:16px}.result.show{display:block}.result.red{border-color:#6e3737}
+.label{color:var(--accent);font-weight:900;font-size:12px;letter-spacing:.12em;text-transform:uppercase}.red .label{color:var(--red)}
+.result h2{font-size:24px;margin:8px 0}.result p{line-height:1.55;color:#e6e9ed}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}.actions .primary{background:var(--accent);color:#101410}
+.note{font-size:12px;color:var(--muted);line-height:1.45;margin-top:16px}
+footer{position:fixed;bottom:0;left:0;right:0;background:rgba(13,15,19,.95);border-top:1px solid var(--line);backdrop-filter:blur(9px)}
+.bar{max-width:700px;margin:auto;display:grid;grid-template-columns:repeat(3,1fr)}.bar button{border:0;background:none;color:var(--muted);padding:14px;font-weight:800}.bar button:first-child{color:white}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="top"><div class="brand">RESET</div><button id="profile" class="profile">Toya ▾</button></div>
+<div class="hero"><h1>What do you need today?</h1><p id="sub">One pull. One small move. No fixing your whole life before breakfast.</p></div>
+<div class="grid">
+<button class="tile" onclick="morning()">☀️ Morning Pull<small>Quick motivation for the day.</small></button>
+<button class="tile" onclick="showMoods()">🃏 Pull a Card<small>Match the assignment to your mood.</small></button>
+<button class="tile" onclick="cheat()">🎟️ Cheat Day<small>Ease up without giving up.</small></button>
+<button class="tile" onclick="us()">❤️ Us<small>A shared connection challenge.</small></button>
+<button class="tile" onclick="helpNow()">🆘 <span id="helpLabel">I Need Help Now</span><small id="helpSmall">A practical reset when your brain is loud.</small></button>
+<button class="tile" onclick="secret()">🕵🏾 Secret Mission<small>A private relationship action.</small></button>
+</div>
+<div id="moods" class="moods"></div>
+<div id="result" class="result">
+<div id="rLabel" class="label"></div><h2 id="rTitle"></h2><p id="rText"></p>
+<div class="actions"><button class="primary" onclick="done()">I did it ✓</button><button onclick="reroll()">Give me another</button></div>
+</div>
+<div class="note">RESET is a self-support tool, not a replacement for therapy, medical care, or substance-use treatment. If either of you cannot stay safe, use real-world emergency/support resources.</div>
+</div>
+<footer><div class="bar"><button onclick="window.scrollTo({top:0,behavior:'smooth'})">Today</button><button onclick="wins()">Wins</button><button onclick="settings()">Settings</button></div></footer>
+<script src="data.js"></script>
+<script>
+let profile=localStorage.getItem("resetProfile")||"toya", last="morning", lastMood=null;
+const $=id=>document.getElementById(id), pick=a=>a[Math.floor(Math.random()*a.length)];
+function setProfile(p){profile=p;localStorage.setItem("resetProfile",p);$("profile").textContent=p==="toya"?"Toya ▾":"Him ▾";$("sub").textContent=p==="toya"?"One pull. One small move. No fixing your whole life before breakfast.":"One move. No speech. No pretending you care less than you do.";$("helpLabel").textContent=p==="toya"?"I Need Help Now":"Craving / Rough Moment";$("helpSmall").textContent=p==="toya"?"A practical reset when your brain is loud.":"Interrupt the loop and get support.";$("moods").classList.remove("show");$("result").className="result"}
+$("profile").onclick=()=>setProfile(profile==="toya"?"him":"toya");setProfile(profile);
+function show(label,title,text,red=false){$("rLabel").textContent=label;$("rTitle").textContent=title;$("rText").textContent=text;$("result").className="result show"+(red?" red":"");$("result").scrollIntoView({behavior:"smooth",block:"center"})}
+function morning(){last="morning";show("Morning Pull","Today's energy",pick(profile==="toya"?DATA.toyaMorning:DATA.himMorning))}
+function showMoods(){let m=profile==="toya"?[["good","😌 Good"],["meh","😐 Meh"],["sad","😢 Sad"],["angry","😡 Pissed"],["anxious","😰 Anxious"],["overwhelmed","🫠 Overwhelmed"]]:[["good","👍 Good"],["irritated","😤 Irritated"],["drained","🪫 Drained"],["craving","⚠️ Craving"],["dontknow","🤷🏾 Don't know"]];$("moods").innerHTML="";m.forEach(([k,l])=>{let b=document.createElement("button");b.textContent=l;b.onclick=()=>mood(k);$("moods").appendChild(b)});$("moods").classList.add("show")}
+function mood(m){last="mood";lastMood=m;let x=pick(profile==="toya"?DATA.toyaCards[m]:DATA.himCards[m]);show("Card Pull",x[0],x[1],profile==="him"&&m==="craving")}
+function cheat(){last="cheat";show("Cheat Day","Use the pass",pick(profile==="toya"?DATA.cheatToya:DATA.cheatHim))}
+function us(){last="us";let x=pick(DATA.couples);show("Us",x[0],x[1])}
+function secret(){last="secret";let a=profile==="toya"?[["Don't chase it","For three hours, don't ask whether something is wrong. Let silence be silence unless something actually needs addressing."],["Softness for you","Do one affectionate thing for yourself before asking him for affection."],["Quiet confidence","Do one thing today that reminds you who you are outside this relationship."]]:[["Affection mission","Give her affection today without her asking. Don't announce that this was your assignment."],["Handle it quietly","Take care of one small thing that makes her day easier. No speech required."],["Say one real thing","Tell her one positive thing you genuinely think about her. Keep it simple."]];let x=pick(a);show("Secret Mission",x[0],x[1])}
+function helpNow(){last="help";if(profile==="toya")show("Reset Now","Facts before fear","Name 3 things you know for sure, 2 things you're assuming, and 1 thing you can control in the next hour. Then do only that one thing.");else show("Craving / Rough Moment","Interrupt the loop","Delay acting. Change locations. Reduce access. Eat or hydrate. Contact a safe support person. Focus on the next safe block of time. If overdose or dangerous withdrawal is possible, get medical help now.",true)}
+function done(){let n=Number(localStorage.getItem("resetWins")||0)+1;localStorage.setItem("resetWins",n);show("Win Saved","That counts.","You moved the day forward. You do not have to turn it into a whole transformation.")}
+function wins(){let n=Number(localStorage.getItem("resetWins")||0);show("Wins","Small moves completed: "+n,"No punishment for missed days. This is evidence of showing up, not a streak you can lose.")}
+function settings(){show("Settings","Your phone, your version","Tap the profile button at the top to switch between Toya and Him. Your completed-card count stays saved on this phone.")}
+function reroll(){if(last==="morning")morning();else if(last==="mood")mood(lastMood);else if(last==="cheat")cheat();else if(last==="us")us();else if(last==="secret")secret();else helpNow()}
+if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js");
+</script>
+</body></html>

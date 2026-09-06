@@ -1,0 +1,1 @@
+const C='reset-v1',A=['./','./index.html','./data.js','./manifest.json','./icon.svg'];self.addEventListener('install',e=>e.waitUntil(caches.open(C).then(x=>x.addAll(A))));self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request))));
